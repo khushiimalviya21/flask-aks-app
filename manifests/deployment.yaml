@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: flask
-        image: <your-acr-name>.azurecr.io/flask-aks-app:latest
+        image: khushiacr321.azurecr.io/flask-aks-app:latest
         ports:
         - containerPort: 5000
