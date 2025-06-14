@@ -22,10 +22,12 @@ stages:
       displayName: Build and Push Docker Image
       inputs:
         command: buildAndPush
-        repository: khushiacr321.azurecr.io/$(imageName)
+        repository: $(imageName)
         dockerfile: '**/Dockerfile'
         containerRegistry: 'KhushiACRConnection'
         tags: latest
+        buildContext: .
+        arguments: '--platform linux/amd64'
 
 - stage: Deploy
   displayName: Deploy to AKS
