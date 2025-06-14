@@ -15,7 +15,7 @@ stages:
       inputs:
         versionSpec: '3.x'
 
-    - task: Checkout@1
+    - checkout: self
 
     - task: Docker@2
       inputs:
@@ -40,6 +40,15 @@ stages:
         namespace: 'default'
         command: apply
         useConfigurationFile: true
-        configuration: |
-          manifests/deployment.yaml
-          manifests/service.yaml
+        configuration: manifests/deployment.yaml
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Azure Resource Manager'
+        azureSubscription: 'azure-subscription-connection'
+        azureResourceGroup: 'flask-rg'
+        kubernetesCluster: 'flask-aks'
+        namespace: 'default'
+        command: apply
+        useConfigurationFile: true
+        configuration: manifests/service.yaml
