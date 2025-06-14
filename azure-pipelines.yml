@@ -22,7 +22,7 @@ stages:
         command: 'buildAndPush'
         repository: '$(imageName)'
         dockerfile: '**/Dockerfile'
-        containerRegistry: '<your-acr-service-connection>'
+        containerRegistry: 'KhushiACRConnection'
         tags: 'latest'
 
 - stage: Deploy
@@ -34,7 +34,7 @@ stages:
     - task: Kubernetes@1
       inputs:
         connectionType: 'Azure Resource Manager'
-        azureSubscription: '<your-subscription-service-connection>'
+        azureSubscription: 'azure-subscription-connection'
         azureResourceGroup: 'flask-rg'
         kubernetesCluster: 'flask-aks'
         namespace: 'default'
