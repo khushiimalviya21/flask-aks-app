@@ -2,7 +2,7 @@ trigger:
 - main
 
 variables:
-  imageName: 'flask-aks-app'
+  imageName: 'khushiacr321.azurecr.io/flask-aks-app'
 
 stages:
 - stage: Build
@@ -19,18 +19,23 @@ stages:
     - checkout: self
 
     - task: Docker@2
-      displayName: Login to ACR
+      displayName: Build Docker Image with Platform
       inputs:
-        command: login
+        command: build
+        repository: $(imageName)
+        dockerfile: '**/Dockerfile'
         containerRegistry: 'KhushiACRConnection'
+        tags: latest
+        buildContext: .
+        arguments: '--platform linux/amd64'
 
-    - script: |
-        docker build --platform linux/amd64 -t khushiacr321.azurecr.io/$(imageName):latest .
-      displayName: 'Build Docker Image'
-
-    - script: |
-        docker push khushiacr321.azurecr.io/$(imageName):latest
-      displayName: 'Push Docker Image'
+    - task: Docker@2
+      displayName: Push Docker Image
+      inputs:
+        command: push
+        repository: $(imageName)
+        containerRegistry: 'KhushiACRConnection'
+        tags: latest
 
 - stage: Deploy
   displayName: Deploy to AKS
@@ -58,27 +63,3 @@ stages:
         azureSubscriptionEndpoint: 'azure-subscription-connection'
         azureResourceGroup: 'flask-rg'
         kubernetesCluster: 'flask-aks'
-        namespace: 'default'
-        command: apply
-        useConfigurationFile: true
-        configuration: manifests/service.yaml
-- stage: Publish
-  displayName: Publish Build Artifacts
-  jobs:
-    - job: PublishArtifacts
-      displayName: Publish Files
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-        - task: CopyFiles@2
-          displayName: Copy Files to Artifact Staging Directory
-          inputs:
-            Contents: '**'
-            TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-        - task: PublishPipelineArtifact@1
-          displayName: Publish Pipeline Artifact
-          inputs:
-            targetPath: '$(Build.ArtifactStagingDirectory)'
-            artifact: 'flask-artifact'
-            publishLocation: 'pipeline'
