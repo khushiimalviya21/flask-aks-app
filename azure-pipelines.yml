@@ -62,3 +62,23 @@ stages:
         command: apply
         useConfigurationFile: true
         configuration: manifests/service.yaml
+- stage: Publish
+  displayName: Publish Build Artifacts
+  jobs:
+    - job: PublishArtifacts
+      displayName: Publish Files
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+        - task: CopyFiles@2
+          displayName: Copy Files to Artifact Staging Directory
+          inputs:
+            Contents: '**'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+        - task: PublishPipelineArtifact@1
+          displayName: Publish Pipeline Artifact
+          inputs:
+            targetPath: '$(Build.ArtifactStagingDirectory)'
+            artifact: 'flask-artifact'
+            publishLocation: 'pipeline'
