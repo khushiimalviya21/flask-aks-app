@@ -20,7 +20,7 @@ stages:
     - task: Docker@2
       inputs:
         command: 'buildAndPush'
-        repository: '$(imageName)'
+        repository: '$(acrLoginServer)/$(imageName)'
         dockerfile: '**/Dockerfile'
         containerRegistry: 'KhushiACRConnection'
         tags: 'latest'
