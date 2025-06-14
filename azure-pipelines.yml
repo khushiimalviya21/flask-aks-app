@@ -18,24 +18,21 @@ stages:
 
     - checkout: self
 
-    - task: Docker@2
-      displayName: Build Docker Image with Platform
+    # Login to ACR
+    - task: DockerLogin@2
+      displayName: Docker Login to ACR
       inputs:
-        command: build
-        repository: $(imageName)
-        dockerfile: '**/Dockerfile'
         containerRegistry: 'KhushiACRConnection'
-        tags: latest
-        buildContext: .
-        arguments: '--platform linux/amd64'
 
-    - task: Docker@2
-      displayName: Push Docker Image
-      inputs:
-        command: push
-        repository: $(imageName)
-        containerRegistry: 'KhushiACRConnection'
-        tags: latest
+    # Use script to build and push with platform set
+    - script: |
+        docker buildx create --use --name mybuilder || true
+        docker buildx build --platform linux/amd64 \
+          -t $(imageName):latest \
+          --push .
+      displayName: Build and Push Docker Image (linux/amd64)
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
 
 - stage: Deploy
   displayName: Deploy to AKS
@@ -63,3 +60,7 @@ stages:
         azureSubscriptionEndpoint: 'azure-subscription-connection'
         azureResourceGroup: 'flask-rg'
         kubernetesCluster: 'flask-aks'
+        namespace: 'default'
+        command: apply
+        useConfigurationFile: true
+        configuration: manifests/service.yaml
