@@ -25,12 +25,12 @@ stages:
         command: login
         containerRegistry: 'KhushiACRConnection'
 
-    # Build and push using docker buildx for linux/amd64
+    # Build and push for linux/amd64
     - script: |
         docker buildx create --use --name mybuilder || true
         docker buildx build \
           --platform linux/amd64 \
-          -t $(imageName):latest \
+          -t $(imageName):$(Build.BuildId) \
           --push .
       displayName: Build and Push Docker Image (linux/amd64)
       env:
@@ -43,6 +43,14 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+    - task: FileTransform@1
+      displayName: Replace image tag in deployment.yaml
+      inputs:
+        folderPath: 'manifests'
+        fileType: 'yaml'
+        targetFiles: 'deployment.yaml'
+        substitutionType: 'token'
+
     - task: Kubernetes@1
       displayName: Deploy Deployment.yaml
       inputs:
