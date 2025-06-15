@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: flask-aks-container
-        image: khushiacr321.azurecr.io/flask-aks-app:REPLACEME
+        image: khushiacr321.azurecr.io/flask-aks-app:latest
         ports:
         - containerPort: 5000
