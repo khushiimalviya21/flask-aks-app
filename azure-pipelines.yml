@@ -37,6 +37,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+<<<<<<< HEAD
     - task: FileTransform@1
       displayName: Replace image tag in deployment.yaml
       inputs:
@@ -44,6 +45,12 @@ stages:
         fileType: 'yaml'
         targetFiles: 'deployment.yaml'
         substitutionType: 'token'
+=======
+    - script: |
+        echo "Replacing image tag in deployment.yaml"
+        sed -i "s|REPLACEME|$(Build.BuildId)|g" manifests/deployment.yaml
+      displayName: Replace image tag using sed
+>>>>>>> 7f40963 (modify)
 
     - task: Kubernetes@1
       displayName: Deploy Deployment.yaml

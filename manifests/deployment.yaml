@@ -1,19 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-deployment
+  name: flask-aks-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: flask
+      app: flask-aks-app
   template:
     metadata:
       labels:
-        app: flask
+        app: flask-aks-app
     spec:
       containers:
+<<<<<<< HEAD
       - name: flask
         image: khushiacr321.azurecr.io/flask-aks-app:#{Build.BuildId}#
+=======
+      - name: flask-aks-container
+        image: khushiacr321.azurecr.io/flask-aks-app:REPLACEME
+>>>>>>> 7f40963 (modify)
         ports:
         - containerPort: 5000
